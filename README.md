@@ -1,2 +1,2 @@
 # TancraftPE
-TancraftPE discord bot for TancraftPE Minecraft server , for future reference.
+TancraftPE discord bot for TancraftPE Network , for future reference.
