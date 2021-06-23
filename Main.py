@@ -1,5 +1,3 @@
-
-
 import discord
 from datetime import datetime
 from pytz import timezone
@@ -69,7 +67,7 @@ async def on_message(message: discord.Message):
         return
     elif "https://discord.gg/" in message.content.lower():
         await message.delete()
-        await message.author.send(f"You were muted in TancraftPE for advertising")
+        await message.author.send(f"You were kicked in TancraftPE for advertising")
         await message.author.kick(reason="Advertising")
         await message.channel.send(f"advertising is not allowed,{message.author.mention} is kicked")
 
@@ -157,9 +155,10 @@ async def on_raw_reaction_remove(reaction):
 @client.event
 async def on_member_join(member):
     welcome_channel = member.guild.get_channel(850022996541702144)
-    await welcome_channel.send(f'Welcome to TanraftPE Network,{member.mention} :partying_face:')
+    await welcome_channel.send(f'Welcome to TancraftPE Network,{member.mention} :partying_face:')
 
 @client.command()
+@commands.has_permissions(manage_messages=True)
 async def clear(ctx,arg):
     await ctx.channel.purge(limit=int(arg))
 
