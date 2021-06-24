@@ -12,24 +12,22 @@ time_window_milliseconds = 5000
 max_msg_per_window = 6
 author_msg_times = {}
 client.remove_command('help')
-status = cycle(['Thebridge', 'skyblock', "OP Factions"])
+status = cycle(['The Bridge', 'Skyblock', "OP Factions"])
+#The below code stores the token, saves time of having to scroll all the way down.
+token = "Your token"
 
 
 @tasks.loop(seconds=4)
 async def change_status():
-    await client.change_presence(activity=discord.Game(next(status) + " at TancraftPE,watching [!]"))
+    await client.change_presence(activity=discord.Game(next(status) + " at The Tancraft Network, watching. [!]"))
 
 
 @client.event
 async def on_ready():
     global message_id
     change_status.start()
-    print("i am ready daddy metallic")
+    print("The Tancraft bot is ready steady and online.")
     guild = client.get_guild(844231449014960160)
-    channel = discord.utils.get(guild.text_channels, name="👊〢bumping")
-    bump_role = discord.utils.get(guild.roles, name="Bumpers")
-    message = await channel.send(f"Disboard is back!\nDo `!d bump` to get the bump king role\n{bump_role.mention}", allowed_mentions=discord.AllowedMentions.all())
-    message_id=message.id
 
 
 @client.listen()
@@ -56,7 +54,7 @@ async def on_message(ctx):
         else:
             await ctx.author.remove_roles(memberRole)
             await ctx.author.add_roles(mutedrole)
-            await ctx.channel.send(f"Muted {ctx.author.mention} for spamming")
+            await ctx.channel.send(f"Muted {ctx.author.mention} for spamming.")
 
 
 @client.listen()
@@ -67,9 +65,9 @@ async def on_message(message: discord.Message):
         return
     elif "https://discord.gg/" in message.content.lower():
         await message.delete()
-        await message.author.send(f"You were kicked in TancraftPE for advertising")
+        await message.author.send(f"You got kicked from {message.guild.name} for advertising.")
         await message.author.kick(reason="Advertising")
-        await message.channel.send(f"advertising is not allowed,{message.author.mention} is kicked")
+        await message.channel.send(f"advertising is not allowed, {message.author.mention} has been kicked.")
 
 
 @client.listen()
@@ -83,7 +81,7 @@ async def on_message(message: discord.Message):
         return
     else:
         await message.delete()
-        await message.channel.send("Only commands allowed in this channel", delete_after=3)
+        await message.channel.send("Only commands are allowed in this channel.", delete_after=3)
 
 
 @client.listen()
@@ -96,7 +94,7 @@ async def on_message(message: discord.Message):
             return
         else:
             await message.delete()
-            await message.channel.send(f"{message.author.mention}you are not allowed to ping everyone",delete_after=5)
+            await message.channel.send(f"{message.author.mention} you are not allowed to ping everyone.",delete_after=5)
             return
     else:
         badword = True
@@ -107,7 +105,7 @@ async def on_message(message: discord.Message):
                 string=string.replace(word, ("-"*len(word)))
         if badword == False:
             await message.delete()
-            await message.channel.send(f"{message.author.mention} tried to say {string}")
+            await message.channel.send(f"Watch your mouth {message.author.mention}!, {message.author.mention} tried to say {string}")
         else :
             return
 @client.listen()
@@ -119,56 +117,30 @@ async def on_message(message: discord.Message):
     else:
         await message.delete()
 @client.event
-async def on_raw_reaction_add(reaction):
-    guild = client.get_guild(844231449014960160)
-    channel = guild.get_channel(reaction.channel_id)
-    role=discord.utils.get(guild.roles, name="Bumpers")
-    messages = await channel.history(oldest_first=True, limit=1).flatten()
-    if reaction.emoji.name != "🔔":
-        return
-    if reaction.message_id != messages[0].id:
-        print("not same message")
-        return
-    member = guild.get_member(reaction.user_id)
-    if member.bot:
-        return
-    if role not in member.roles:
-        await member.add_roles(role)
-        await channel.send(f"{member.mention} you will be tagged by bump reminders",delete_after=10)
-@client.event
-async def on_raw_reaction_remove(reaction):
-    guild =client.get_guild(844231449014960160)
-    channel = guild.get_channel(reaction.channel_id)
-    role=discord.utils.get(guild.roles, name="Bumpers")
-    messages = await channel.history(oldest_first=True, limit=1).flatten()
-    if reaction.emoji.name != "🔔":
-        return
-    if reaction.message_id != messages[0].id:
-        print("not same message")
-        return
-    member = guild.get_member(reaction.user_id)
-    if member.bot:
-        return
-    if role in member.roles:
-        await member.remove_roles(role)
-        await channel.send(f"{member.mention} you will no longer be tagged by bump reminders",delete_after=10)
-@client.event
+
 async def on_member_join(member):
-    welcome_channel = member.guild.get_channel(850022996541702144)
-    await welcome_channel.send(f'Welcome to TancraftPE Network,{member.mention} :partying_face:')
+    welcome_channel = member.guild.get_channel(857336332945981440)
+    await welcome_channel.send(f'Welcome to {member.guild.name}, {member.mention}! :partying_face:')
 
 @client.command()
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx,arg):
     await ctx.channel.purge(limit=int(arg))
 
+# A working ban command (gamer)
 @client.command()
 @commands.has_permissions(ban_members = True)
 async def ban(ctx, member : discord.Member, *, reason = None):
+    if member == None or member == ctx.message.author:
+        await ctx.channel.send("You cannot ban yourself.")
+        return
+    message = f"You have been banned from {ctx.guild.name} for {reason}."
+    await member.send(message)
     await member.ban(reason = reason)
-    await ctx.send(f"{member} is banned")
+    await ctx.send(f"{member.mention} was struck by the ban hammer for {reason}.")
 
 
+# The broken shitty unban command.
 @client.command()
 @commands.has_permissions(administrator = True)
 async def unban(ctx, *, member):
@@ -182,71 +154,6 @@ async def unban(ctx, *, member):
             await ctx.guild.unban(user)
             await ctx.send(f'Unbanned {user.mention}')
             return
-bump_king_id=0
-message_id=0
-@client.command(name="d", aliases=["D"])
-async def bump_reminder(ctx: discord.ext.commands.Context, action: str):
-    global bump_king_id,message_id
-    disboard = ctx.guild.get_member(302050872383242240)
-    bump_king_role = discord.utils.get(ctx.guild.roles,name="BumpKing")
-    if ctx.channel.id != 852646981759270972:
-        await ctx.send("Use this command at the bump channel")
-        return
-    if not action.casefold() == "bump":
-        return
-    if not disboard.status == discord.Status.online:
-        await ctx.send(embed=(discord.Embed(color=discord.Colour.red,
-                                            description=(f"{ctx.author.mention} Whoa {disboard.mention} appears to be offline right now!\nContack MetallicWeb7080 to report that")
-                                            )
-                              ),
-                       delete_after=20)
-        return
-    if lock_disboard_Out_for_two_hours.is_running():
-        time_zone=timezone('US/Eastern')
-        next_bump=lock_disboard_Out_for_two_hours.next_iteration.astimezone(time_zone).replace(microsecond=0)
-        now = datetime.now().astimezone(time_zone).replace(microsecond=0)
-        duration = next_bump-now
-        print(duration)
-
-        await ctx.send(
-                    embed=discord.Embed(
-                        color=0xe5e740,
-                        description=f"{ctx.author.mention} disboard will be back in {duration} ",
-                        title="Please Wait",
-                    ),delete_after=20)
-        return
-    else :
-        embed = discord.Embed(title=f"Thanks for bumping!!!", description=f"{ctx.author.mention}You are now the new bump king\nDisboard will be back in two hours",colour=0x0df214)
-        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
-        bump_king_id=ctx.author.id
-        await ctx.author.add_roles(bump_king_role)
-        await ctx.send(embed=embed,delete_after=7200)
-        await ctx.channel.set_permissions(disboard, view_channel =False)
-        if message_id == 0:
-            pass
-        else:
-            await client.http.delete_message(ctx.channel.id, message_id)
-        lock_disboard_Out_for_two_hours.start()
-        return
-
-@tasks.loop(hours=2)
-async def lock_disboard_Out_for_two_hours():
-    global bump_king_id,message_id
-    if lock_disboard_Out_for_two_hours.current_loop == 0:
-        return None
-    guild =client.get_guild(844231449014960160)
-    disboard=guild.get_member(302050872383242240)
-    bump_role=discord.utils.get(guild.roles, name="Bumpers")
-    bump_king = discord.utils.get(guild.roles, name="BumpKing")
-    channel= discord.utils.get(guild.text_channels, name="👊〢bumping")
-    remove_bump_king=guild.get_member(bump_king_id)
-    await remove_bump_king.remove_roles(bump_king)
-    message = await channel.send(f"Disboard is back!\nDo `!d bump` to get the bump king role\n{bump_role.mention}",
-                                 allowed_mentions=discord.AllowedMentions.all())
-    message_id = message.id
-    await channel.set_permissions(disboard, view_channel=True, send_messages=False)
-    lock_disboard_Out_for_two_hours.cancel()
-
 
 @client.command()
 async def whois(ctx, member: discord.Member = None):
@@ -254,7 +161,7 @@ async def whois(ctx, member: discord.Member = None):
         member = ctx.message.author
     roles = [role for role in member.roles]
     embed = discord.Embed(colour=discord.Colour.green(), timestamp=ctx.message.created_at,
-                          title=f"User Info of {member} in TancraftPE")
+                          title=f"User Info of {member} in {message.g}")
     embed.set_thumbnail(url=member.avatar_url)
     embed.set_footer(text=f"Requested by {ctx.author}")
 
@@ -268,12 +175,17 @@ async def whois(ctx, member: discord.Member = None):
     embed.add_field(name="Highest Role:", value=member.top_role.mention)
     await ctx.send(embed=embed)
 
-
+# A working kick command
 @client.command()
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason=None):
+    if member == None or member == ctx.message.author:
+        await ctx.channel.send("You cannot kick yourself.")
+        return
+    message = f"You have been kicked from {ctx.guild.name} for {reason}."
+    await member.send(message)
     await member.kick(reason=reason)
-    await ctx.send(f"{member} was kicked!")
+    await ctx.send(f":boot: {member} was kicked out the door for {reason}!")
 
 
 @client.command()
@@ -284,7 +196,7 @@ async def mute(ctx, member: discord.Member, *, reason=None):
     memberRole=discord.utils.get(guild.roles, name="Member")
     await member.remove_roles(memberRole, reason=reason)
     await member.add_roles(mutedRole, reason=reason)
-    await ctx.send(f"Muted {member.mention} for reason {reason}")
+    await ctx.send(f"Muted {member.mention}.")
 
 
 @client.command()
@@ -305,13 +217,13 @@ async def online(ctx,arg):
         online_embed = discord.Embed(
             colour=discord.Colour.green()
         )
-        online_embed.set_author(name=f"Server Is Online,runing on {online.map}\nThe server's description is {online.motd}")
+        online_embed.set_author(name=f"Server Is Online, running on {online.map}\nThe server's description is {online.motd}")
         online_embed.add_field(name="Server Latency",
                         value=f"{round(online.latency*100)}ms")
         online_embed.add_field(name="Server players",value=f"{online.players_online}/{online.players_max}")
         await ctx.send(embed=online_embed)
     except:
-        await ctx.send("The server you chose is either not online , don't exist or didn't enable 3rd party info fetcher")
+        await ctx.send("The server you chose is either offline, doesn't exist or you didn't enable 3rd party info fetcher.")
 
 
 @client.command()
@@ -351,16 +263,17 @@ async def about(ctx):
     server_created=ctx.guild.created_at.strftime("%d/%m/%Y")
     embed = discord.Embed(title="About TancraftPE",
                           colour=discord.Colour.green(),
-                          description=f"TancraftPE is a mincraft bedrock network created at {server_created}",
+                          description=f"TancraftPE is a Minecraft bedrock editon network created at {server_created}",
                           timestamp=ctx.message.created_at)
-    embed.add_field(name="Gamemodes:", value="skyblock, bedwars, skywars, spleef, sumo",
+    embed.add_field(name="Gamemodes:", value="Skyblock, Bedwars, Skywars, Spleef, Sumo",
                     inline=False)
-    embed.add_field(name="Shop:", value="Buy our server ranks at [TancraftPE Store](https://tancraft.tebex.io/)", inline=False)
-    embed.add_field(name="Server IP:", value="IP:Not released \nPort:19132", inline=False)
+    embed.add_field(name="Shop:", value="Buy our server ranks at the [TancraftPE Store](https://tancraft.tebex.io/)", inline=False)
+    embed.add_field(name="Server IP:", value="IP: Not released yet \nPort: 19132", inline=False)
     embed.add_field(name="Founders:", value="These are the people that helped to create TancraftPE", inline=False)
-    embed.add_field(name="FoxyInABoxy#3570", value="owner/server developer", inline=True)
-    embed.add_field(name="MetallicWeb7080#6454", value="owner/discord developer", inline=True)
-    embed.add_field(name="DcRexMC#2969", value="owner/builder", inline=True)
+    embed.add_field(name="FoxyInABoxy#3570", value="Owner/Server developer", inline=True)
+    embed.add_field(name="MetallicWeb7080#6454", value="Owner/Discord developer", inline=True)
+    embed.add_field(name="DcRexMC#2969", value="Owner/Builder", inline=True)
+    embed.add_field(name="kinja#2137", value="[Improved Bot Developer](https://beacons.page/yeezys)", inline=True)
     embed.set_footer(text=f"Requested by {ctx.author}")
     await ctx.send(embed=embed)
 
@@ -368,7 +281,7 @@ async def about(ctx):
 async def help(ctx):
 
     embed = discord.Embed(
-        title="TancraftPE Bot:\nIncludeds",
+        title="The Tancraft Network Bot:\nIncludes",
         colour=discord.Colour.green()
     )
     embed.set_author(name=ctx.message.author,icon_url= ctx.message.author.avatar_url)
@@ -378,34 +291,34 @@ async def help(ctx):
     embed.add_field(name="```!about```",
                     value="Server Information", inline=True)
     embed.add_field(name="```!online```",
-                    value="check if server online and get info", inline=True)
+                    value="Check if a server online and get info.", inline=True)
     embed.add_field(name="```!stats```",
-                    value="check out statistic of TancraftPE discord ",
+                    value="Check out statistics of this discord server!",
                     inline=True)
     embed.add_field(name="```!whois```",
-                    value="!whois for your own info \n!whois (@user) \nTo get user info in tancraft \n", inline=True)
+                    value="!whois for your own info \n!whois (@user) \nTo get user info in {message.guild.name} \n", inline=True)
     embed.add_field(name="Server Moderation:",
-                    value="only TancraftPE staff team members can use these commands",
+                    value="Only {message.guild.name} staff team members can use these commands.",
                     inline=False)
     embed.add_field(name="```!clear```",
-                    value="use !clear(amount)", inline=True)
+                    value="Use !clear (amount)", inline=True)
     embed.add_field(name="```!ban and !unban```",
                     value="!ban @user\n!unban(user_name)\neg:MetallicWeb7080#6454 ", inline=True)
     embed.add_field(name="```!kick```",
                     value="!kick @user ", inline=True)
     embed.add_field(name="```!mute and !unmute```",
                     value="!mute @user\n!unmute @user ", inline=True)
-    embed.set_footer(text="Made by MetallicWeb7080")
+    embed.set_footer(text="Made by MetallicWeb7080 • Improved by Kinja")
     await ctx.send( embed=embed)
 
 @client.event
 async def on_command_error(ctx,error):
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send("don't have permission to use command")
+        await ctx.send("You do not have permission to use this command.")
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("needs an argument")
+        await ctx.send("Needs an argument")
     elif isinstance(error,commands.CommandInvokeError):
-        await ctx.send("some code is bugged")
+        await ctx.send("Error:404 Code Is Bugged until further fix")
         print(error)
 
-client.run("Token")
+client.run(token)
