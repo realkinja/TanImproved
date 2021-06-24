@@ -1,2 +1,9 @@
 # TanImproved
 TancraftPE discord bot for TancraftPE Network coded by MetallicWeb7080(benson chow), but improved.
+
+### ToDo List
+- [ ] Fix shitty unmute and unban command. #bug (contact me on discord if you know how to fix kinja#2137)
+- [ ] Improve the mute command.
+
+### Completed Tasks ✓
+- [x] Improved Grammar  
