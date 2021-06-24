@@ -7,3 +7,5 @@ TancraftPE discord bot for TancraftPE Network coded by MetallicWeb7080(benson ch
 
 ### Completed Tasks ✓
 - [x] Improved Grammar  
+- [x] Dms you the reason you got kicked/banned.
+- [x] Welcome message now just says guild name instead of TancraftPE
